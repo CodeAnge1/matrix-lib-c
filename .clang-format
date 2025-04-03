@@ -1,0 +1,18 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 80
+Language: Cpp
+Standard: Cpp11
+UseTab: Always
+AlignAfterOpenBracket: Align
+AlignConsecutiveDeclarations: true
+SeparateDefinitionBlocks: Always
+SortIncludes: CaseInsensitive
+IncludeBlocks: Regroup
+AlignConsecutiveAssignments: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: None
+PointerAlignment: Left

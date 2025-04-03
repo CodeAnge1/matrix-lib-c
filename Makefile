@@ -1,6 +1,7 @@
 CC = gcc
 FLAGS = -Wall -Wextra -g -std=c11 -DDEBUG
 
+INCLUDE_DIR = ./include
 SRC_DIR = ./src
 TEST_DIR = ./tests
 BUILD_DIR = ./build
@@ -49,4 +50,16 @@ clean:
 cleanf:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
-.PHONY: all rebuild test clean cleanf
+check-format:
+	@echo "Checking code style..."
+	@find $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR) \
+	-name '*.c' -o -name '*.h' | \
+	xargs clang-format --style=file --dry-run -Werror
+
+format:
+	@echo "Reformatting code..."
+	@find $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR) \
+	-name '*.c' -o -name '*.h' | \
+	xargs clang-format --style=file -i -Werror
+
+.PHONY: all rebuild test clean cleanf check-format format
