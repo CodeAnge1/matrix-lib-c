@@ -4,18 +4,23 @@
 #include <stdio.h>
 
 typedef enum {
-    MATRIX_SUCCESS = 0,
-    MATRIX_NULL_PTR_ERR,
-    MATRIX_STRUCT_MEM_ALLOC_ERR,
-    MATRIX_DATA_MEM_ALLOC_ERR,
-    MATRIX_INVALID_SIZE_ERR,
-    MATRIX_DIMENSIONS_MISMATCH,
-    MATRIX_IS_NOT_SQUARE_ERR,
-    MATRIX_FILE_READ_ERR,
-    MATRIX_ERROR_COUNT
+	SUCCESS = 0,
+	NULL_PTR_ERR,
+	STRUCT_MEM_ALLOC_ERR,
+	DATA_MEM_ALLOC_ERR,
+	INVALID_SIZE_ERR,
+	DIMENSIONS_MISMATCH,
+	IS_NOT_SQUARE_ERR,
+	CANNOT_EXCLUDE_ROW_COL,
+	FILE_READ_ERR,
+	ERROR_COUNT
 } MatrixErrorCode;
 
-const char *getErrorMessage(const MatrixErrorCode errCode);
-MatrixErrorCode checkMatrixSize(size_t rows, size_t cols);
+#include "../matrix/matrix.h"
+
+const char*		getErrorMessage(const MatrixErrorCode errCode);
+MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols);
+MatrixErrorCode compareMatrixSizes(const Matrix* A, const Matrix* B);
+MatrixErrorCode canExclude(const size_t count, const size_t currentIndex);
 
 #endif
