@@ -1,7 +1,7 @@
 BasedOnStyle: Google
 IndentWidth: 4
 TabWidth: 4
-ColumnLimit: 80
+ColumnLimit: 75
 Language: Cpp
 Standard: Cpp11
 UseTab: Always
@@ -12,7 +12,8 @@ SortIncludes: CaseInsensitive
 IncludeBlocks: Regroup
 AlignConsecutiveAssignments: true
 KeepEmptyLinesAtTheStartOfBlocks: true
-
 BreakBeforeBraces: Attach
 AllowShortFunctionsOnASingleLine: None
+DerivePointerAlignment: false
 PointerAlignment: Left
+AlignTrailingComments: Always

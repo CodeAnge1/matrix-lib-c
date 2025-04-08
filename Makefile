@@ -52,14 +52,12 @@ cleanf:
 
 check-format:
 	@echo "Checking code style..."
-	@find $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR) \
-	-name '*.c' -o -name '*.h' | \
+	@find "./" -name '*.c' -o -name '*.h' | \
 	xargs clang-format --style=file --dry-run -Werror
 
 format:
 	@echo "Reformatting code..."
-	@find $(INCLUDE_DIR) $(SRC_DIR) $(TEST_DIR) \
-	-name '*.c' -o -name '*.h' | \
+	@find "./" -name '*.c' -o -name '*.h' | \
 	xargs clang-format --style=file -i -Werror
 
 .PHONY: all rebuild test clean cleanf check-format format
