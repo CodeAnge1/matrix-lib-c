@@ -25,7 +25,7 @@ const char* getErrorMessage(const MatrixErrorCode errCode) {
 		case INVALID_SIZE_ERR:
 			message = "Некорректный размер матрицы";
 			break;
-		case DIMENSIONS_MISMATCH:
+		case DIMENSIONS_MISMATCH_ERR:
 			message = "Размеры матриц не совпадают";
 			break;
 		case IS_NOT_SQUARE_ERR:
@@ -33,6 +33,9 @@ const char* getErrorMessage(const MatrixErrorCode errCode) {
 			break;
 		case CANNOT_EXCLUDE_ROW_COL:
 			message = "Не удалось удалить ряд или колонку из матрицы";
+			break;
+		case CANNOT_MULTIPLY_MATRICES:
+			message = "Невозможно умножить матрицы";
 			break;
 		case FILE_READ_ERR:
 			message = "Не удалось считать матрицу из файла";
@@ -55,15 +58,16 @@ MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols) {
 	return errCode;
 }
 
-MatrixErrorCode compareMatrixSizes(const Matrix* A, const Matrix* B) {
-	MatrixErrorCode result = SUCCESS;
-
-	if (A->colC != B->colC || A->rowC != B->rowC) {
-		result = DIMENSIONS_MISMATCH;
-	}
-	return result;
+MatrixErrorCode matrixSizesIsEqual(const Matrix* A, const Matrix* B) {
+	return (A->colC == B->colC && A->rowC == B->rowC)
+			   ? SUCCESS
+			   : DIMENSIONS_MISMATCH_ERR;
 }
 
 MatrixErrorCode canExclude(const size_t count, const size_t currentIndex) {
 	return count > currentIndex ? SUCCESS : CANNOT_EXCLUDE_ROW_COL;
+}
+
+MatrixErrorCode canMultiplyMatrices(const Matrix* A, const Matrix* B) {
+	return A->colC == B->rowC ? SUCCESS : DIMENSIONS_MISMATCH_ERR;
 }

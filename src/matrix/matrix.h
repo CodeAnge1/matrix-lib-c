@@ -44,6 +44,8 @@ MatrixResult transposeMatrix(const MatrixResult A);
 
 DeterminantResult findDeterminant(const MatrixResult A);
 
+MatrixResult multiplyMatrices(MatrixResult A, MatrixResult B);
+
 void printMatrix(const MatrixResult matrixResult);
 
 #endif	// MATRIX_H

@@ -9,9 +9,10 @@ typedef enum {
 	STRUCT_MEM_ALLOC_ERR,
 	DATA_MEM_ALLOC_ERR,
 	INVALID_SIZE_ERR,
-	DIMENSIONS_MISMATCH,
+	DIMENSIONS_MISMATCH_ERR,
 	IS_NOT_SQUARE_ERR,
 	CANNOT_EXCLUDE_ROW_COL,
+	CANNOT_MULTIPLY_MATRICES,
 	FILE_READ_ERR,
 	ERROR_COUNT
 } MatrixErrorCode;
@@ -20,7 +21,8 @@ typedef enum {
 
 const char*		getErrorMessage(const MatrixErrorCode errCode);
 MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols);
-MatrixErrorCode compareMatrixSizes(const Matrix* A, const Matrix* B);
+MatrixErrorCode matrixSizesIsEqual(const Matrix* A, const Matrix* B);
 MatrixErrorCode canExclude(const size_t count, const size_t currentIndex);
+MatrixErrorCode canMultiplyMatrices(const Matrix* A, const Matrix* B);
 
 #endif
