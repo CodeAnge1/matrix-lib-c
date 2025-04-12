@@ -89,3 +89,4 @@ dkms.conf
 # Other
 build/
 bin/
+data/
