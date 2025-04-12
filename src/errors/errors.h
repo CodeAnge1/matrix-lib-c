@@ -13,7 +13,14 @@ typedef enum {
 	IS_NOT_SQUARE_ERR,
 	CANNOT_EXCLUDE_ROW_COL,
 	CANNOT_MULTIPLY_MATRICES,
+	FILE_WRITE_ERR,
 	FILE_READ_ERR,
+	EMPTY_FILE_ERR,
+	INVALID_INPUT_DATA_ERR,
+	NOT_ENOUGH_VALUES_ERR,
+	TOO_MANY_VALUES_ERR,
+	LINE_TOO_LONG_ERR,
+	FAILED_CONVERT_TO_BUFFER,
 	ERROR_COUNT
 } MatrixErrorCode;
 
@@ -24,5 +31,6 @@ MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols);
 MatrixErrorCode matrixSizesIsEqual(const Matrix* A, const Matrix* B);
 MatrixErrorCode canExclude(const size_t count, const size_t currentIndex);
 MatrixErrorCode canMultiplyMatrices(const Matrix* A, const Matrix* B);
+MatrixErrorCode checkVariableCount(const Matrix* A, const size_t count);
 
 #endif

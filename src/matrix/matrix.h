@@ -1,10 +1,12 @@
 #ifndef MATRIX_H
 #define MATRIX_H
+#define _GNU_SOURCE
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../../include/config.h"
 
@@ -21,6 +23,8 @@ typedef struct {
 	MatrixErrorCode error;
 } MatrixResult;
 
+#include "../output/output.h"
+
 typedef struct {
 	DETERMINANT_TYPE determinant;
 	MatrixErrorCode	 error;
@@ -31,6 +35,8 @@ MatrixResult createMatrix(size_t rows, size_t cols);
 void freeMatrix(Matrix** matrix);
 
 void fillMatrix(MatrixResult* res, const MATRIX_TYPE* data);
+
+MatrixResult loadMatrixFromFile(const char* filename);
 
 MatrixResult createMinor(MatrixResult A, size_t excludeRowIndex,
 						 size_t excludeColIndex);
@@ -46,6 +52,6 @@ DeterminantResult findDeterminant(const MatrixResult A);
 
 MatrixResult multiplyMatrices(MatrixResult A, MatrixResult B);
 
-void printMatrix(const MatrixResult matrixResult);
+char* convertMatrixToBuffer(const MatrixResult A);
 
 #endif	// MATRIX_H

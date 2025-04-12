@@ -14,7 +14,9 @@ MatrixResult createMatrix(const size_t rows, const size_t cols) {
 		(newMatrix)->data =
 			(MATRIX_TYPE**)(calloc(rows, sizeof(MATRIX_TYPE*)));
 
-		if (newMatrix->data == NULL) out.error = DATA_MEM_ALLOC_ERR;
+		if (newMatrix->data == NULL) {
+			out.error = DATA_MEM_ALLOC_ERR;
+		}
 
 		for (size_t iter = 0; iter < rows && out.error == SUCCESS;
 			 ++iter) {
@@ -27,10 +29,11 @@ MatrixResult createMatrix(const size_t rows, const size_t cols) {
 		}
 	}
 
-	if (out.error != SUCCESS)
+	if (out.error != SUCCESS) {
 		freeMatrix(&newMatrix);
-	else
+	} else {
 		out.matrix = newMatrix;
+	}
 
 	return out;
 }
@@ -39,8 +42,9 @@ void freeMatrix(Matrix** matrix) {
 	if (*matrix != NULL) {
 		if ((*matrix)->data != NULL) {
 			for (size_t iter = 0; iter < (*matrix)->rowC; ++iter) {
-				if ((*matrix)->data[iter] != NULL)
+				if ((*matrix)->data[iter] != NULL) {
 					free((*matrix)->data[iter]);
+				}
 			}
 			free((*matrix)->data);
 			(*matrix)->data = NULL;
@@ -59,13 +63,94 @@ void freeMatrixResult(MatrixResult* res) {
 }
 
 void fillMatrix(MatrixResult* A, const MATRIX_TYPE* data) {
-	if (A->matrix == NULL || A->matrix->data == NULL)
+	if (A->matrix == NULL || A->matrix->data == NULL) {
 		A->error = NULL_PTR_ERR;
-	else
-		for (size_t row = 0; row < A->matrix->rowC; row++)
-			for (size_t col = 0; col < A->matrix->colC; col++)
+	} else {
+		for (size_t row = 0; row < A->matrix->rowC; row++) {
+			for (size_t col = 0; col < A->matrix->colC; col++) {
 				A->matrix->data[row][col] =
 					data[row * A->matrix->colC + col];
+			}
+		}
+	}
+}
+
+MatrixResult loadMatrixFromFile(const char* filename) {
+	MatrixResult out = {.matrix = NULL, .error = SUCCESS};
+
+	FILE* file = NULL;
+	file	   = fopen(filename, "r");
+
+	size_t rows = 0, cols = 0;
+	char   line[BUFFER_SIZE];
+
+	char* rest = NULL;
+	char* token;
+	char* delimiters = " \n\t";
+
+	if (file == NULL) {
+		out.error = FILE_READ_ERR;
+	} else {
+		if (fgets(line, BUFFER_SIZE, file) == NULL) {
+			out.error = EMPTY_FILE_ERR;
+		} else if (strchr(line, '\n') == NULL) {
+			out.error = LINE_TOO_LONG_ERR;
+		} else if (sscanf(line, "%zu %zu\n", &rows, &cols) != 2) {
+			out.error = FILE_READ_ERR;
+		} else {
+			out.error = checkMatrixSize(rows, cols);
+		}
+	}
+
+	if (out.error == SUCCESS) {
+		out = createMatrix(rows, cols);
+	}
+
+	size_t		 insertionIndex = 0;
+	MATRIX_TYPE* newMatrixData	= calloc(rows * cols, sizeof(MATRIX_TYPE));
+
+	if (newMatrixData == NULL) {
+		out.error = DATA_MEM_ALLOC_ERR;
+	}
+
+	if (out.error == SUCCESS) {
+
+		for (size_t curRow = 0; curRow < rows && out.error == SUCCESS;
+			 curRow++) {
+			if (fgets(line, BUFFER_SIZE, file) == NULL) {
+				out.error = FILE_READ_ERR;
+			} else if (strchr(line, '\n') == NULL) {
+				out.error = LINE_TOO_LONG_ERR;
+			} else {
+				for (token = strtok_r(line, delimiters, &rest);
+					 token != NULL;
+					 token = strtok_r(NULL, delimiters, &rest)) {
+					MATRIX_TYPE curNumber = 0;
+					if (sscanf(token, MATRIX_T_SPEC, &curNumber) != 1) {
+						out.error = INVALID_INPUT_DATA_ERR;
+					} else {
+						newMatrixData[insertionIndex++] = curNumber;
+					}
+				}
+			}
+		}
+	}
+
+	out.error =
+		checkVariableCount((const Matrix*)out.matrix, insertionIndex);
+
+	if (out.error == SUCCESS) {
+		fillMatrix(&out, newMatrixData);
+	} else {
+		freeMatrix(&out.matrix);
+	}
+
+	if (file) {
+		fclose(file);
+	}
+	free(newMatrixData);
+
+	return out;
 }
 
 MatrixResult createMinor(MatrixResult A, size_t excludeRowIndex,
@@ -86,11 +171,14 @@ MatrixResult createMinor(MatrixResult A, size_t excludeRowIndex,
 		MATRIX_TYPE newMatrixData[out.matrix->colC * out.matrix->rowC];
 		size_t		insertionIndex = 0;
 
-		for (size_t row = 0; row < A.matrix->rowC; row++)
-			for (size_t col = 0; col < A.matrix->colC; col++)
-				if (!(row == excludeRowIndex || col == excludeColIndex))
+		for (size_t row = 0; row < A.matrix->rowC; row++) {
+			for (size_t col = 0; col < A.matrix->colC; col++) {
+				if (!(row == excludeRowIndex || col == excludeColIndex)) {
 					newMatrixData[insertionIndex++] =
 						A.matrix->data[row][col];
+				}
+			}
+		}
 
 		fillMatrix(&out, newMatrixData);
 	}
@@ -110,11 +198,12 @@ MatrixResult getSumOrDiffMatrices(const MatrixResult A,
 		out = createMatrix(A.matrix->rowC, A.matrix->colC);
 		if (out.error == SUCCESS) {
 			for (size_t row = 0; row < A.matrix->rowC; row++) {
-				for (size_t col = 0; col < A.matrix->colC; col++)
+				for (size_t col = 0; col < A.matrix->colC; col++) {
 					(out.matrix)->data[row][col] =
 						A.matrix->data[row][col] +
 						(B.matrix->data[row][col] *
 						 (1 - 2 * (int8_t)getDiff));
+				}
 			}
 		}
 	}
@@ -151,8 +240,9 @@ MatrixResult transposeMatrix(const MatrixResult A) {
 		out = createMatrix(A.matrix->colC, A.matrix->rowC);
 		if (out.error == SUCCESS) {
 			for (size_t row = 0; row < A.matrix->rowC; row++) {
-				for (size_t col = 0; col < A.matrix->colC; col++)
+				for (size_t col = 0; col < A.matrix->colC; col++) {
 					out.matrix->data[col][row] = A.matrix->data[row][col];
+				}
 			}
 		}
 	}
@@ -164,13 +254,13 @@ DeterminantResult findDeterminant(const MatrixResult A) {
 	DeterminantResult out = {.determinant = (DETERMINANT_TYPE)0,
 							 .error		  = SUCCESS};
 
-	if (A.matrix == NULL || A.matrix->data == NULL)
+	if (A.matrix == NULL || A.matrix->data == NULL) {
 		out.error = NULL_PTR_ERR;
-	else if (A.matrix->rowC != A.matrix->colC)
+	} else if (A.matrix->rowC != A.matrix->colC) {
 		out.error = IS_NOT_SQUARE_ERR;
-	else if (A.error != SUCCESS)
+	} else if (A.error != SUCCESS) {
 		out.error = A.error;
-	else {
+	} else {
 		const MATRIX_TYPE** M = (const MATRIX_TYPE**)A.matrix->data;
 		switch (A.matrix->rowC) {
 			case 1:
@@ -216,20 +306,53 @@ MatrixResult multiplyMatrices(MatrixResult A, MatrixResult B) {
 		out.error = DIMENSIONS_MISMATCH_ERR;
 	} else {
 		out = createMatrix(A.matrix->rowC, B.matrix->colC);
-		if (out.error == SUCCESS)
-			for (size_t rowIndex = 0; rowIndex < A.matrix->rowC; rowIndex++)
-				for (size_t colIndex = 0; colIndex < B.matrix->colC; colIndex++)
-					for (size_t rIndex = 0; rIndex < A.matrix->colC; rIndex++)
-						out.matrix->data[rowIndex][colIndex] += A.matrix->data[rowIndex][rIndex] * B.matrix->data[rIndex][colIndex];
+		if (out.error == SUCCESS) {
+			for (size_t rowIndex = 0; rowIndex < A.matrix->rowC;
+				 rowIndex++) {
+				for (size_t colIndex = 0; colIndex < B.matrix->colC;
+					 colIndex++) {
+					for (size_t rIndex = 0; rIndex < A.matrix->colC;
+						 rIndex++) {
+						out.matrix->data[rowIndex][colIndex] +=
+							A.matrix->data[rowIndex][rIndex] *
+							B.matrix->data[rIndex][colIndex];
+					}
+				}
+			}
+		}
 	}
 
 	return out;
 }
 
-void printMatrix(const MatrixResult res) {
-	for (size_t row = 0; row < res.matrix->rowC; row++) {
-		for (size_t col = 0; col < res.matrix->colC; col++)
-			printf("%lf ", res.matrix->data[row][col]);
-		printf("\n");
+char* convertMatrixToBuffer(const MatrixResult A) {
+	size_t maxBufferSize	 = BUFFER_SIZE;
+	size_t currentBufferSize = 0;
+
+	char* buffer = (char*)malloc(maxBufferSize);
+
+	for (size_t row = 0; row < A.matrix->rowC && buffer; row++) {
+		for (size_t col = 0; col < A.matrix->colC && buffer; col++) {
+			MATRIX_TYPE number	= A.matrix->data[row][col];
+			size_t requiredSize = snprintf(NULL, 0, MATRIX_T_SPEC, number);
+			while (currentBufferSize + requiredSize > maxBufferSize &&
+				   buffer) {
+				buffer = (char*)realloc(buffer, maxBufferSize);
+				maxBufferSize *= 2;
+			}
+			if (buffer) {
+				currentBufferSize +=
+					snprintf(buffer + currentBufferSize,
+							 maxBufferSize - currentBufferSize,
+							 MATRIX_T_SPEC " ", number);
+			}
+		}
+		if (buffer) {
+			currentBufferSize +=
+				snprintf(buffer + currentBufferSize,
+						 maxBufferSize - currentBufferSize, "\n");
+		}
 	}
+
+	return buffer;
 }

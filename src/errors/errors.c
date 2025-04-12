@@ -37,8 +37,29 @@ const char* getErrorMessage(const MatrixErrorCode errCode) {
 		case CANNOT_MULTIPLY_MATRICES:
 			message = "Невозможно умножить матрицы";
 			break;
+		case FILE_WRITE_ERR:
+			message = "Не удалось открыть файл на запись";
+			break;
 		case FILE_READ_ERR:
 			message = "Не удалось считать матрицу из файла";
+			break;
+		case EMPTY_FILE_ERR:
+			message = "Переданный файл пуст";
+			break;
+		case INVALID_INPUT_DATA_ERR:
+			message = "Входной формат данных некорректен";
+			break;
+		case NOT_ENOUGH_VALUES_ERR:
+			message = "В переданном файле недостаточно значений";
+			break;
+		case TOO_MANY_VALUES_ERR:
+			message = "В переданном файле слишком много значений";
+			break;
+		case LINE_TOO_LONG_ERR:
+			message = "Размер буфера слишком мал";
+			break;
+		case FAILED_CONVERT_TO_BUFFER:
+			message = "";
 			break;
 		default:
 			message = "Получена неизвестная ошибка";
@@ -70,4 +91,14 @@ MatrixErrorCode canExclude(const size_t count, const size_t currentIndex) {
 
 MatrixErrorCode canMultiplyMatrices(const Matrix* A, const Matrix* B) {
 	return A->colC == B->rowC ? SUCCESS : DIMENSIONS_MISMATCH_ERR;
+}
+
+MatrixErrorCode checkVariableCount(const Matrix* A, const size_t count) {
+	const size_t matrixSize = A->rowC * A->colC;
+
+	MatrixErrorCode res = (matrixSize == count)	 ? SUCCESS
+						  : (matrixSize > count) ? TOO_MANY_VALUES_ERR
+												 : NOT_ENOUGH_VALUES_ERR;
+
+	return res;
 }
