@@ -30,16 +30,19 @@ typedef struct {
 	MatrixErrorCode	 error;
 } DeterminantResult;
 
-MatrixResult createMatrix(size_t rows, size_t cols);
+MatrixResult createMatrix(const size_t rows, const size_t cols);
 
 void freeMatrix(Matrix** matrix);
 
-void fillMatrix(MatrixResult* res, const MATRIX_TYPE* data);
+void freeMatrixResult(MatrixResult* res);
+
+void fillMatrix(MatrixResult* A, const MATRIX_TYPE* data);
 
 MatrixResult loadMatrixFromFile(const char* filename);
 
-MatrixResult createMinor(MatrixResult A, size_t excludeRowIndex,
-						 size_t excludeColIndex);
+MatrixResult createMinor(const MatrixResult A,
+						 const size_t		excludeRowIndex,
+						 const size_t		excludeColIndex);
 
 MatrixResult getSumOrDiffMatrices(const MatrixResult A,
 								  const MatrixResult B, bool getDiff);
@@ -50,7 +53,7 @@ MatrixResult transposeMatrix(const MatrixResult A);
 
 DeterminantResult findDeterminant(const MatrixResult A);
 
-MatrixResult multiplyMatrices(MatrixResult A, MatrixResult B);
+MatrixResult multiplyMatrices(const MatrixResult A, const MatrixResult B);
 
 char* convertMatrixToBuffer(const MatrixResult A);
 

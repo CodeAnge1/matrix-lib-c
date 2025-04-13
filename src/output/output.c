@@ -24,11 +24,10 @@ MatrixErrorCode outputToFile(const MatrixResult A, const char* filename) {
 		if (buffer) {
 			FILE* file = NULL;
 			file	   = fopen(filename, "w");
-			if (file == NULL) {
+			if (file == NULL)
 				res = FILE_WRITE_ERR;
-			} else {
+			else
 				fprintf(file, "%s", buffer);
-			}
 		} else
 			res = FAILED_CONVERT_TO_BUFFER;
 	}

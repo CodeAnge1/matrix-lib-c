@@ -153,35 +153,43 @@ MatrixResult loadMatrixFromFile(const char* filename) {
 	return out;
 }
 
-MatrixResult createMinor(MatrixResult A, size_t excludeRowIndex,
-						 size_t excludeColIndex) {
+MatrixResult createMinor(const MatrixResult A,
+						 const size_t		excludeRowIndex,
+						 const size_t		excludeColIndex) {
 	MatrixResult out = {.matrix = NULL, .error = SUCCESS};
 
-	if (A.matrix == NULL) {
+	if (A.matrix == NULL)
 		out.error = NULL_PTR_ERR;
-	} else {
-		out.error = canExclude(A.matrix->rowC, excludeRowIndex) ||
-					canExclude(A.matrix->colC, excludeColIndex);
+	else {
+		out.error = canExclude(A.matrix->rowC, excludeRowIndex);
+		if (out.error == SUCCESS)
+			out.error = canExclude(A.matrix->colC, excludeColIndex);
 	}
 
 	if (out.error == SUCCESS) {
-
 		out = createMatrix(A.matrix->rowC - 1, A.matrix->colC - 1);
 
-		MATRIX_TYPE newMatrixData[out.matrix->colC * out.matrix->rowC];
-		size_t		insertionIndex = 0;
+		if (out.error == SUCCESS) {
+			MATRIX_TYPE* newMatrixData = (MATRIX_TYPE*)calloc(
+				out.matrix->colC * out.matrix->rowC, sizeof(MATRIX_TYPE));
+			size_t insertionIndex = 0;
 
-		for (size_t row = 0; row < A.matrix->rowC; row++) {
-			for (size_t col = 0; col < A.matrix->colC; col++) {
-				if (!(row == excludeRowIndex || col == excludeColIndex)) {
-					newMatrixData[insertionIndex++] =
-						A.matrix->data[row][col];
+			for (size_t row = 0; row < A.matrix->rowC; row++) {
+				for (size_t col = 0; col < A.matrix->colC; col++) {
+					if (!(row == excludeRowIndex ||
+						  col == excludeColIndex)) {
+						newMatrixData[insertionIndex++] =
+							A.matrix->data[row][col];
+					}
 				}
 			}
-		}
 
-		fillMatrix(&out, newMatrixData);
+			fillMatrix(&out, newMatrixData);
+		}
 	}
+
+	if (out.error != SUCCESS && out.matrix != NULL)
+		freeMatrix(&out.matrix);
 
 	return out;
 }
@@ -190,11 +198,11 @@ MatrixResult getSumOrDiffMatrices(const MatrixResult A,
 								  const MatrixResult B, bool getDiff) {
 	MatrixResult out = {.matrix = NULL, .error = SUCCESS};
 
-	if (A.matrix == NULL || B.matrix == NULL) {
+	if (A.matrix == NULL || B.matrix == NULL)
 		out.error = NULL_PTR_ERR;
-	} else if (matrixSizesIsEqual(A.matrix, B.matrix) != SUCCESS) {
+	else if (matrixSizesIsEqual(A.matrix, B.matrix) != SUCCESS)
 		out.error = DIMENSIONS_MISMATCH_ERR;
-	} else {
+	else {
 		out = createMatrix(A.matrix->rowC, A.matrix->colC);
 		if (out.error == SUCCESS) {
 			for (size_t row = 0; row < A.matrix->rowC; row++) {
@@ -208,25 +216,28 @@ MatrixResult getSumOrDiffMatrices(const MatrixResult A,
 		}
 	}
 
+	if (out.error != SUCCESS && out.matrix != NULL)
+		freeMatrix(&out.matrix);
+
 	return out;
 }
 
 MatrixResult getMatrixCopy(const MatrixResult source) {
 	MatrixResult out = {.matrix = NULL, .error = SUCCESS};
 
-	if (source.matrix == NULL) {
+	if (source.matrix == NULL)
 		out.error = NULL_PTR_ERR;
-	} else {
+	else {
 		out = createMatrix(source.matrix->rowC, source.matrix->colC);
-		if (out.error == SUCCESS) {
-			for (size_t row = 0; row < source.matrix->rowC; row++) {
-				for (size_t col = 0; col < source.matrix->colC; col++) {
+		if (out.error == SUCCESS)
+			for (size_t row = 0; row < source.matrix->rowC; row++)
+				for (size_t col = 0; col < source.matrix->colC; col++)
 					out.matrix->data[row][col] =
 						source.matrix->data[row][col];
-				}
-			}
-		}
 	}
+
+	if (out.error != SUCCESS && out.matrix != NULL)
+		freeMatrix(&out.matrix);
 
 	return out;
 }
@@ -238,14 +249,14 @@ MatrixResult transposeMatrix(const MatrixResult A) {
 		out.error = NULL_PTR_ERR;
 	} else {
 		out = createMatrix(A.matrix->colC, A.matrix->rowC);
-		if (out.error == SUCCESS) {
-			for (size_t row = 0; row < A.matrix->rowC; row++) {
-				for (size_t col = 0; col < A.matrix->colC; col++) {
+		if (out.error == SUCCESS)
+			for (size_t row = 0; row < A.matrix->rowC; row++)
+				for (size_t col = 0; col < A.matrix->colC; col++)
 					out.matrix->data[col][row] = A.matrix->data[row][col];
-				}
-			}
-		}
 	}
+
+	if (out.error != SUCCESS && out.matrix != NULL)
+		freeMatrix(&out.matrix);
 
 	return out;
 }
@@ -254,13 +265,13 @@ DeterminantResult findDeterminant(const MatrixResult A) {
 	DeterminantResult out = {.determinant = (DETERMINANT_TYPE)0,
 							 .error		  = SUCCESS};
 
-	if (A.matrix == NULL || A.matrix->data == NULL) {
+	if (A.matrix == NULL || A.matrix->data == NULL)
 		out.error = NULL_PTR_ERR;
-	} else if (A.matrix->rowC != A.matrix->colC) {
+	else if (A.matrix->rowC != A.matrix->colC)
 		out.error = IS_NOT_SQUARE_ERR;
-	} else if (A.error != SUCCESS) {
+	else if (A.error != SUCCESS)
 		out.error = A.error;
-	} else {
+	else {
 		const MATRIX_TYPE** M = (const MATRIX_TYPE**)A.matrix->data;
 		switch (A.matrix->rowC) {
 			case 1:
@@ -284,11 +295,10 @@ DeterminantResult findDeterminant(const MatrixResult A) {
 					int8_t			  sign		  = (col & 1) ? -1 : 1;
 					DeterminantResult minorDet =
 						findDeterminant(minorMatrix);
-					if (minorDet.error != SUCCESS) {
+					if (minorDet.error != SUCCESS)
 						out.error = minorDet.error;
-					} else {
+					else
 						out.determinant += sign * minorDet.determinant;
-					}
 					freeMatrixResult(&minorMatrix);
 				}
 		}
@@ -297,28 +307,25 @@ DeterminantResult findDeterminant(const MatrixResult A) {
 	return out;
 }
 
-MatrixResult multiplyMatrices(MatrixResult A, MatrixResult B) {
+MatrixResult multiplyMatrices(const MatrixResult A, const MatrixResult B) {
 	MatrixResult out = {.matrix = NULL, .error = SUCCESS};
 
-	if (A.matrix == NULL || B.matrix == NULL) {
+	if (A.matrix == NULL || B.matrix == NULL)
 		out.error = NULL_PTR_ERR;
-	} else if (canMultiplyMatrices(A.matrix, B.matrix) != SUCCESS) {
+	else if (canMultiplyMatrices(A.matrix, B.matrix) != SUCCESS)
 		out.error = DIMENSIONS_MISMATCH_ERR;
-	} else {
+	else {
 		out = createMatrix(A.matrix->rowC, B.matrix->colC);
 		if (out.error == SUCCESS) {
 			for (size_t rowIndex = 0; rowIndex < A.matrix->rowC;
-				 rowIndex++) {
+				 rowIndex++)
 				for (size_t colIndex = 0; colIndex < B.matrix->colC;
-					 colIndex++) {
+					 colIndex++)
 					for (size_t rIndex = 0; rIndex < A.matrix->colC;
-						 rIndex++) {
+						 rIndex++)
 						out.matrix->data[rowIndex][colIndex] +=
 							A.matrix->data[rowIndex][rIndex] *
 							B.matrix->data[rIndex][colIndex];
-					}
-				}
-			}
 		}
 	}
 
@@ -340,18 +347,16 @@ char* convertMatrixToBuffer(const MatrixResult A) {
 				buffer = (char*)realloc(buffer, maxBufferSize);
 				maxBufferSize *= 2;
 			}
-			if (buffer) {
+			if (buffer)
 				currentBufferSize +=
 					snprintf(buffer + currentBufferSize,
 							 maxBufferSize - currentBufferSize,
 							 MATRIX_T_SPEC " ", number);
-			}
 		}
-		if (buffer) {
+		if (buffer)
 			currentBufferSize +=
 				snprintf(buffer + currentBufferSize,
 						 maxBufferSize - currentBufferSize, "\n");
-		}
 	}
 
 	return buffer;
