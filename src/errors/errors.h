@@ -1,3 +1,8 @@
+/**
+ * @file errors.h
+ * @brief Предоставляет функции для обработки ошибок
+ */
+
 #ifndef ERRORS_H
 #define ERRORS_H
 

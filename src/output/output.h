@@ -1,3 +1,8 @@
+/**
+ * @file output.h
+ * @brief Предоставляет функции для вывода матриц
+ */
+
 #ifndef OUTPUT_H
 #define OUTPUT_H
 

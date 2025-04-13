@@ -1,5 +1,6 @@
 /**
- * @file
+ * @file matrix.h
+ * @brief Предоставляет функции для операций над матрицами
  */
 
 #ifndef MATRIX_H
