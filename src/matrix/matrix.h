@@ -11,23 +11,23 @@
 #include "../../include/config.h"
 
 typedef struct {
-	size_t		  rowC;
-	size_t		  colC;
-	MATRIX_TYPE** data;
+  size_t		rowC;
+  size_t		colC;
+  MATRIX_TYPE** data;
 } Matrix;
 
 #include "../errors/errors.h"
 
 typedef struct {
-	Matrix*			matrix;
-	MatrixErrorCode error;
+  Matrix*		  matrix;
+  MatrixErrorCode error;
 } MatrixResult;
 
 #include "../output/output.h"
 
 typedef struct {
-	DETERMINANT_TYPE determinant;
-	MatrixErrorCode	 error;
+  DETERMINANT_TYPE determinant;
+  MatrixErrorCode  error;
 } DeterminantResult;
 
 MatrixResult createMatrix(const size_t rows, const size_t cols);
