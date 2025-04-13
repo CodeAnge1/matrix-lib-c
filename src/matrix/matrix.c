@@ -11,8 +11,7 @@ MatrixResult createMatrix(const size_t rows, const size_t cols) {
 	newMatrix->rowC = rows;
 	newMatrix->colC = cols;
 
-	newMatrix->data =
-		(MATRIX_TYPE**)(calloc(rows, sizeof(MATRIX_TYPE*)));
+	newMatrix->data = (MATRIX_TYPE**)(calloc(rows, sizeof(MATRIX_TYPE*)));
 
 	if (newMatrix->data == NULL) {
 	  out.error = DATA_MEM_ALLOC_ERR;

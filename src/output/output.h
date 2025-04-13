@@ -6,8 +6,19 @@
 
 #include "../matrix/matrix.h"
 
+/**
+ * @brief Выводит матрицу в стандартный вывод
+ * @param A Матрица для вывода
+ * @return Код ошибки MatrixErrorCode
+ */
 MatrixErrorCode outputToStdOut(const MatrixResult A);
 
+/**
+ * @brief Выводит матрицу в файл
+ * @param A Матрица для вывода
+ * @param filename Имя файла
+ * @return Код ошибки MatrixErrorCode
+ */
 MatrixErrorCode outputToFile(const MatrixResult A, const char* filename);
 
 #endif
