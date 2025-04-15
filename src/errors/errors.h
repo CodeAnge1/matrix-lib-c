@@ -35,6 +35,13 @@ typedef enum {
 } MatrixErrorCode;
 
 #include "../matrix/matrix.h"
+#include "messages.h"
+
+/**
+ * @brief Меняет текущий язык для вывода ошибок
+ * @param newLang Код языка (Language)
+ */
+void setLanguage(Language newLang);
 
 /**
  * @brief Возвращает текстовое описание ошибки
