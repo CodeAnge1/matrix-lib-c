@@ -7,16 +7,22 @@
 #define CONFIG_H
 
 /**
+ * @def DATA_DIR
+ * @brief Директория для хранения тестовых файлов с матрицами
+ */
+#define DATA_DIR "data/"
+
+/**
  * @def INPUT_FILE_DIR
  * @brief Директория для входных файлов с матрицами
  */
-#define INPUT_FILE_DIR "data/input/"
+#define INPUT_FILE_DIR DATA_DIR "input/"
 
 /**
  * @def OUTPUT_FILE_DIR
  * @brief Директория для выходных файлов с результатами
  */
-#define OUTPUT_FILE_DIR "data/output/"
+#define OUTPUT_FILE_DIR DATA_DIR "output/"
 
 /**
  * @def BUFFER_SIZE
