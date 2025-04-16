@@ -265,7 +265,7 @@ DeterminantResult findDeterminant(const MatrixResult A) {
   else if (A.error != SUCCESS)
 	out.error = A.error;
   else {
-	const MATRIX_TYPE** M = (const MATRIX_TYPE**)A.matrix->data;
+	MATRIX_TYPE** M = A.matrix->data;
 	switch (A.matrix->rowC) {
 	  case 1:
 		out.determinant = A.matrix->data[0][0];
