@@ -56,7 +56,7 @@ const char* getErrorMessage(const MatrixErrorCode errCode);
  * @param cols Количество столбцов
  * @return Код ошибки MatrixErrorCode
  */
-MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols);
+MatrixErrorCode checkMatrixSize(const int64_t rows, const int64_t cols);
 
 /**
  * @brief Проверяет совпадение размеров матриц

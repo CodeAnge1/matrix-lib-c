@@ -1,25 +1,29 @@
 #include "matrix.h"
 
-MatrixResult createMatrix(const size_t rows, const size_t cols) {
+MatrixResult createMatrix(const int64_t rows, const int64_t cols) {
 
   Matrix*	   newMatrix = (Matrix*)calloc(1, sizeof(Matrix));
   MatrixResult out		 = {.matrix = NULL, .error = SUCCESS};
 
-  if (newMatrix == NULL) {
+  if (newMatrix == NULL)
 	out.error = STRUCT_MEM_ALLOC_ERR;
-  } else if (checkMatrixSize(rows, cols) == SUCCESS) {
-	newMatrix->rowC = rows;
-	newMatrix->colC = cols;
+  else
+	out.error = checkMatrixSize(rows, cols);
+  if (out.error == SUCCESS) {
+	newMatrix->rowC = (size_t)rows;
+	newMatrix->colC = (size_t)cols;
 
-	newMatrix->data = (MATRIX_TYPE**)(calloc(rows, sizeof(MATRIX_TYPE*)));
+	newMatrix->data =
+		(MATRIX_TYPE**)(calloc((size_t)rows, sizeof(MATRIX_TYPE*)));
 
 	if (newMatrix->data == NULL) {
 	  out.error = DATA_MEM_ALLOC_ERR;
 	}
 
-	for (size_t iter = 0; iter < rows && out.error == SUCCESS; ++iter) {
+	for (size_t iter = 0; iter < (size_t)rows && out.error == SUCCESS;
+		 ++iter) {
 	  newMatrix->data[iter] =
-		  (MATRIX_TYPE*)(calloc(cols, sizeof(MATRIX_TYPE)));
+		  (MATRIX_TYPE*)(calloc((size_t)cols, sizeof(MATRIX_TYPE)));
 
 	  if (newMatrix->data[iter] == NULL) {
 		out.error = DATA_MEM_ALLOC_ERR;
@@ -78,8 +82,8 @@ MatrixResult loadMatrixFromFile(const char* filename) {
   FILE* file = NULL;
   file		 = fopen(filename, "r");
 
-  size_t rows = 0, cols = 0;
-  char	 line[BUFFER_SIZE];
+  int64_t rows = 0, cols = 0;
+  char	  line[BUFFER_SIZE];
 
   char* rest = NULL;
   char* token;
@@ -92,15 +96,17 @@ MatrixResult loadMatrixFromFile(const char* filename) {
 	  out.error = EMPTY_FILE_ERR;
 	} else if (strchr(line, '\n') == NULL) {
 	  out.error = LINE_TOO_LONG_ERR;
-	} else if (sscanf(line, "%zu %zu\n", &rows, &cols) != 2) {
-	  out.error = FILE_READ_ERR;
-	} else {
+	} else if (sscanf(line, "%ld %ld\n", &rows, &cols) == 2) {
 	  out.error = checkMatrixSize(rows, cols);
+	} else {
+	  out.error = INVALID_INPUT_DATA_ERR;
 	}
   }
 
   if (out.error == SUCCESS) {
-	out = createMatrix(rows, cols);
+	rows = (size_t)rows;
+	cols = (size_t)cols;
+	out	 = createMatrix(rows, cols);
   }
 
   size_t	   insertionIndex = 0;
@@ -112,12 +118,10 @@ MatrixResult loadMatrixFromFile(const char* filename) {
 
   if (out.error == SUCCESS) {
 
-	for (size_t curRow = 0; curRow < rows && out.error == SUCCESS;
+	for (size_t curRow = 0; curRow < (size_t)rows && out.error == SUCCESS;
 		 curRow++) {
 	  if (fgets(line, BUFFER_SIZE, file) == NULL) {
 		out.error = FILE_READ_ERR;
-	  } else if (strchr(line, '\n') == NULL) {
-		out.error = LINE_TOO_LONG_ERR;
 	  } else {
 		for (token = strtok_r(line, delimiters, &rest); token != NULL;
 			 token = strtok_r(NULL, delimiters, &rest)) {
@@ -131,9 +135,10 @@ MatrixResult loadMatrixFromFile(const char* filename) {
 	  }
 	}
   }
-
   out.error =
-	  checkVariableCount((const Matrix*)out.matrix, insertionIndex);
+	  (out.error == SUCCESS)
+		  ? checkVariableCount((const Matrix*)out.matrix, insertionIndex)
+		  : out.error;
 
   if (out.error == SUCCESS) {
 	fillMatrix(&out, newMatrixData);

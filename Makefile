@@ -10,12 +10,14 @@ BUILD_SRC_DIR = $(BUILD_DIR)/src
 BUILD_TEST_DIR = $(BUILD_DIR)/tests
 
 LIB_SRC := $(shell find $(SRC_DIR) -name "*.c" ! -name "main.c")
-TEST_SRC := $(shell find $(TEST_DIR) -name "*.c")
-MAIN_SRC = $(shell find $(SRC_DIR) -name "main.c")
-ALL_SRC = $(LIB_SRC) $(TEST_SRC) $(MAIN_SRC)
+TEST_RUNNER_SRC :=  $(TEST_DIR)/test_runner.c
+TEST_SRC := $(shell find $(TEST_DIR) -name "*.c" ! -name "*_runner*")
+MAIN_SRC := $(shell find $(SRC_DIR) -name "main.c")
+ALL_SRC := $(LIB_SRC) $(TEST_SRC) $(TEST_RUNNER_SRC) $(MAIN_SRC)
 
 LIB_OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_SRC_DIR)/%.o,$(LIB_SRC))
 TEST_OBJ := $(patsubst $(TEST_DIR)/%.c,$(BUILD_TEST_DIR)/%.o,$(TEST_SRC))
+TEST_RUNNER_OBJ := $(patsubst $(TEST_DIR)/%.c,$(BUILD_TEST_DIR)/%.o,$(TEST_RUNNER_SRC))
 MAIN_OBJ := $(patsubst $(SRC_DIR)/%.c,$(BUILD_SRC_DIR)/%.o,$(MAIN_SRC))
 ALL_OBJ := $(LIB_OBJ) $(TEST_OBJ) $(MAIN_OBJ)
 
@@ -41,8 +43,15 @@ $(BUILD_DIR)/%.o: %.c
 $(TARGET): $(LIB_OBJ) $(MAIN_OBJ) | prepare-dirs
 	$(CC) $(FLAGS) $^ -o $@
 
-test: $(LIB_OBJ) $(TEST_OBJ) | prepare-dirs
-	$(CC) $(FLAGS) $^ -o $(TEST_TARGET)
+test: $(TEST_TARGET) $(TARGET) | prepare-dirs
+	$(TEST_TARGET)
+
+$(TEST_TARGET): $(LIB_OBJ) $(TEST_OBJ) $(TEST_RUNNER_OBJ) | prepare-dirs
+	$(CC) $(FLAGS) $^ -o $@ -lcunit
+
+$(BUILD_TEST_DIR)/%.o: $(TEST_DIR)/%.c
+	mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)/*

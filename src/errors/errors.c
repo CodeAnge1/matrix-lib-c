@@ -58,8 +58,8 @@ const char* getErrorMessage(const MatrixErrorCode errCode) {
   return message;
 }
 
-MatrixErrorCode checkMatrixSize(const size_t rows, const size_t cols) {
-  return (rows == 0 || cols == 0) ? INVALID_SIZE_ERR : SUCCESS;
+MatrixErrorCode checkMatrixSize(const int64_t rows, const int64_t cols) {
+  return (rows <= 0 || cols <= 0) ? INVALID_SIZE_ERR : SUCCESS;
 }
 
 MatrixErrorCode matrixSizesIsEqual(const Matrix* A, const Matrix* B) {

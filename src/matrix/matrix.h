@@ -55,7 +55,7 @@ typedef struct {
  * @return Структура MatrixResult
  * @note Если возвращаемая ошибка не "SUCCESS", то поле matrix будет NULL
  */
-MatrixResult createMatrix(const size_t rows, const size_t cols);
+MatrixResult createMatrix(const int64_t rows, const int64_t cols);
 
 /**
  * @brief Освобождает память, выделенную под матрицу
