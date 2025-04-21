@@ -1,6 +1,7 @@
 CC = gcc
 FLAGS = -Wall -Wextra -g -std=c11 -DDEBUG
 
+DATA_DIR = ./data
 INCLUDE_DIR = ./include
 SRC_DIR = ./src
 TEST_DIR = ./tests
@@ -52,6 +53,14 @@ $(TEST_TARGET): $(LIB_OBJ) $(TEST_OBJ) $(TEST_RUNNER_OBJ) | prepare-dirs
 $(BUILD_TEST_DIR)/%.o: $(TEST_DIR)/%.c
 	mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+init-data:
+	@mkdir -p $(DATA_DIR)/input $(DATA_DIR)/output
+	@printf "2 2\n1 2\n3 4" > $(DATA_DIR)/input/A.txt
+	@printf "2 2\n5 6\n7 8" > $(DATA_DIR)/input/B.txt
+	@printf "2 2\n1 1\n1 1" > $(DATA_DIR)/input/C.txt
+	@printf "2 2\n1 2\n4 5" > $(DATA_DIR)/input/D.txt
+	@echo "Тестовые данные созданы в $(DATA_DIR)/input/"
 
 clean:
 	rm -rf $(BUILD_DIR)/*

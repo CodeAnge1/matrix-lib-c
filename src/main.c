@@ -2,10 +2,10 @@
 #include "matrix/matrix.h"
 
 int main() {
-  MatrixResult A = loadMatrixFromFile(INPUT_FILE_DIR "matrix_a.txt");
-  MatrixResult B = loadMatrixFromFile(INPUT_FILE_DIR "matrix_b.txt");
-  MatrixResult C = loadMatrixFromFile(INPUT_FILE_DIR "matrix_c.txt");
-  MatrixResult D = loadMatrixFromFile(INPUT_FILE_DIR "matrix_d.txt");
+  MatrixResult A = loadMatrixFromFile(INPUT_FILE_DIR "A.txt");
+  MatrixResult B = loadMatrixFromFile(INPUT_FILE_DIR "B.txt");
+  MatrixResult C = loadMatrixFromFile(INPUT_FILE_DIR "C.txt");
+  MatrixResult D = loadMatrixFromFile(INPUT_FILE_DIR "D.txt");
 
   MatrixResult result	   = getSumOrDiffMatrices(A, B, 0);
   MatrixResult transposedC = transposeMatrix(C);
