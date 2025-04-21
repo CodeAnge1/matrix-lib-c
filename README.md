@@ -178,8 +178,46 @@ make test
 ## Задание на защиту:
 Вывести первую строку загруженной матрицы дебагером gdb
 
-**Скрин введёных команд**
-![alt text](defense/image.png)
+**Лог введёных команд:**
+
+Запуск gdb
+```sh
+gdb ./bin/MatrixLib 
+```
+
+Установка breakpoint
+```sh
+(gdb) break 8
+> Breakpoint 1 at 0x2a3b: file src/main.c, line 4.
+```
+
+Запуск программы
+```sh
+(gdb) run
+> Breakpoint 1, main () at src/main.c:8
+> 8	 MatrixResult D = loadMatrixFromFile(INPUT_FILE_DIR "D.txt");
+```
+
+Включение логирования
+```sh
+set logging on
+> Copying output to gdb.txt.
+> Copying debug output to gdb.txt.
+```
+
+Цикл для перебора всей первой строчки матрицы A
+```sh
+(gdb) while $cur_col < A.matrix.colC
+printf "%f\n", A.matrix->data[0][$cur_col]
+set $cur_col = $cur_col + 1
+end
+```
+
+Завершение программы и выход
+```sh
+continue
+exit
+```
 
 **Сохранённый файл отладчика:**
 
