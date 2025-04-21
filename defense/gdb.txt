@@ -1,0 +1,5 @@
+1.000000
+2.000000
+Continuing.
+[Inferior 1 (process 7406) exited normally]
+The program is not being run.
